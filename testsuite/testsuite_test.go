@@ -8,8 +8,8 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	"github.com/stumble/wpgx"
-	sqlsuite "github.com/stumble/wpgx/testsuite"
+	"github.com/one2x-ai/wpgx"
+	sqlsuite "github.com/one2x-ai/wpgx/testsuite"
 )
 
 type metaTestSuite struct {
@@ -233,7 +233,7 @@ func (suite *metaTestSuite) TestQueryUseLoader() {
 	suite.Require().Nil(err)
 	err = json.Unmarshal(desc, &descObj)
 	suite.Nil(err)
-	suite.Equal(`github.com/stumble/wpgx`, descObj.GithubURL)
+	suite.Equal(`github.com/one2x-ai/wpgx`, descObj.GithubURL)
 }
 
 func (suite *metaTestSuite) TestQueryUseLoadTemplate() {
@@ -252,7 +252,7 @@ func (suite *metaTestSuite) TestQueryUseLoadTemplate() {
 		}{
 			Rev:       66.66,
 			CreatedAt: now.UTC().Format(time.RFC3339),
-			GithubURL: "github.com/stumble/wpgx",
+			GithubURL: "github.com/one2x-ai/wpgx",
 		})
 
 	rows, err := exec.WQuery(ctx,
@@ -277,7 +277,7 @@ func (suite *metaTestSuite) TestQueryUseLoadTemplate() {
 	suite.Require().Nil(err)
 	err = json.Unmarshal(desc, &descObj)
 	suite.Nil(err)
-	suite.Equal(`github.com/stumble/wpgx`, descObj.GithubURL)
+	suite.Equal(`github.com/one2x-ai/wpgx`, descObj.GithubURL)
 }
 
 func (suite *metaTestSuite) TestCopyFromUseGolden() {

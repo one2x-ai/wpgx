@@ -20,7 +20,7 @@ import (
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
 	"github.com/testcontainers/testcontainers-go/wait"
 
-	"github.com/stumble/wpgx"
+	"github.com/one2x-ai/wpgx"
 )
 
 type Loader interface {
