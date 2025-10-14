@@ -58,4 +58,4 @@ formatters:
     paths:
       - third_party$
       - builtin$
-      - examples$
+      - examples$# Updated for one2x-ai fork
