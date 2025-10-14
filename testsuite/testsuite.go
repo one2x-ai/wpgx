@@ -20,7 +20,7 @@ import (
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
 	"github.com/testcontainers/testcontainers-go/wait"
 
-	"github.com/stumble/wpgx"
+	"github.com/one2x-ai/wpgx"
 )
 
 type Loader interface {
@@ -64,6 +64,10 @@ func NewWPgxTestSuiteFromEnv(db string, tables []string) *WPgxTestSuite {
 	useContainer := os.Getenv("USE_TEST_CONTAINERS") == "true"
 	config := wpgx.ConfigFromEnv()
 	config.DBName = db
+	// Test environments typically don't have SSL enabled
+	if config.SSLMode == "" || config.SSLMode == "require" {
+		config.SSLMode = "disable"
+	}
 	return NewWPgxTestSuiteFromConfig(config, db, tables, useContainer)
 }
 
@@ -139,6 +143,7 @@ func (suite *WPgxTestSuite) setupWithContainer() {
 	suite.Config.Username = defaultPostgresUser
 	suite.Config.Password = defaultPostgresPassword
 	suite.Config.DBName = suite.Testdb
+	suite.Config.SSLMode = "disable" // Test container does not have SSL enabled
 
 	// Create pool
 	pool, err := wpgx.NewPool(context.Background(), suite.Config)
@@ -167,8 +172,8 @@ func (suite *WPgxTestSuite) setupWithDirectConnection() {
 
 	// create DB
 	conn, err := pgx.Connect(context.Background(), fmt.Sprintf(
-		"postgres://%s:%s@%s:%d",
-		suite.Config.Username, suite.Config.Password, suite.Config.Host, suite.Config.Port))
+		"postgres://%s:%s@%s:%d?sslmode=%s",
+		suite.Config.Username, suite.Config.Password, suite.Config.Host, suite.Config.Port, suite.Config.SSLMode))
 	suite.Require().NoError(err, "failed to connect to pg")
 	defer conn.Close(context.Background())
 	_, err = conn.Exec(ctx, fmt.Sprintf("DROP DATABASE IF EXISTS %s WITH (FORCE);", suite.Testdb))

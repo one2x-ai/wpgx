@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	"github.com/stumble/wpgx/testsuite"
+	"github.com/one2x-ai/wpgx/testsuite"
 )
 
 // ExampleTestSuite demonstrates how to use the testsuite framework

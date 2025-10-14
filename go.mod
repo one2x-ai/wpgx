@@ -1,4 +1,4 @@
-module github.com/stumble/wpgx
+module github.com/one2x-ai/wpgx
 
 go 1.24.0
 

@@ -22,6 +22,7 @@ type ReadReplicaConfig struct {
 	Host            string        `default:"localhost"`
 	Port            int           `default:"5432"`
 	DBName          string        `default:"wpgx_test_db"`
+	SSLMode         string        `default:"require"`
 	MaxConns        int32         `default:"100"`
 	MinConns        int32         `default:"0"`
 	MaxConnLifetime time.Duration `default:"6h"`
@@ -41,6 +42,7 @@ type Config struct {
 	Host            string        `default:"localhost"`
 	Port            int           `default:"5432"`
 	DBName          string        `default:"wpgx_test_db"`
+	SSLMode         string        `default:"require"`
 	MaxConns        int32         `default:"100"`
 	MinConns        int32         `default:"0"`
 	MaxConnLifetime time.Duration `default:"6h"`

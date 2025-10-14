@@ -52,10 +52,10 @@ formatters:
       sections:
         - standard
         - default
-        - prefix(github.com/stumble/wpgx)
+        - prefix(github.com/one2x-ai/wpgx)
   exclusions:
     generated: lax
     paths:
       - third_party$
       - builtin$
-      - examples$
+      - examples$# Updated for one2x-ai fork

@@ -13,7 +13,7 @@ import (
 const (
 	// TracerName is the name of the tracer. This will be used as an attribute
 	// on each span.
-	tracerName = "github.com/stumble/wpgx"
+	tracerName = "github.com/one2x-ai/wpgx"
 
 	// InstrumentationVersion is the version of the wpgx library. This will
 	// be used as an attribute on each span.
