@@ -36,6 +36,7 @@ type pgxConfig struct {
 	Host            string
 	Port            int
 	DBName          string
+	SSLMode         string
 	MaxConns        int32
 	MinConns        int32
 	MaxConnLifetime time.Duration
@@ -45,12 +46,13 @@ type pgxConfig struct {
 }
 
 func newRawPgxPool(ctx context.Context, config *pgxConfig) (*pgxpool.Pool, error) {
-	pgConfig, err := pgxpool.ParseConfig(fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
+	pgConfig, err := pgxpool.ParseConfig(fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=%s",
 		config.Username,
 		config.Password,
 		config.Host,
 		config.Port,
-		config.DBName))
+		config.DBName,
+		config.SSLMode))
 	if err != nil {
 		return nil, err
 	}
@@ -81,6 +83,7 @@ func NewPool(ctx context.Context, config *Config) (*Pool, error) {
 		Host:            config.Host,
 		Port:            config.Port,
 		DBName:          config.DBName,
+		SSLMode:         config.SSLMode,
 		MaxConns:        config.MaxConns,
 		MinConns:        config.MinConns,
 		MaxConnLifetime: config.MaxConnLifetime,
@@ -107,6 +110,7 @@ func NewPool(ctx context.Context, config *Config) (*Pool, error) {
 			Host:            replicaConfig.Host,
 			Port:            replicaConfig.Port,
 			DBName:          replicaConfig.DBName,
+			SSLMode:         replicaConfig.SSLMode,
 			MaxConns:        replicaConfig.MaxConns,
 			MinConns:        replicaConfig.MinConns,
 			MaxConnLifetime: replicaConfig.MaxConnLifetime,
