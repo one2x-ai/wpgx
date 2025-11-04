@@ -15,29 +15,29 @@ type ExampleTestSuite struct {
 	*testsuite.WPgxTestSuite
 }
 
-// NewExampleTestSuite creates a test suite
-// Automatically selects mode based on USE_TEST_CONTAINERS environment variable:
-// - true: Uses testcontainers to automatically start PostgreSQL container
-// - false or unset: Uses direct connection mode (requires pre-started PostgreSQL)
+// NewExampleTestSuite creates a test suite using the recommended approach.
+// Uses testcontainers to automatically create a dedicated PostgreSQL container for this suite.
+// Each suite gets its own container, allowing parallel test execution across packages.
 func NewExampleTestSuite() *ExampleTestSuite {
 	return &ExampleTestSuite{
-		WPgxTestSuite: testsuite.NewWPgxTestSuiteFromEnv("example_test_db", []string{
+		WPgxTestSuite: testsuite.NewWPgxTestSuiteTcDefault([]string{
 			`CREATE TABLE IF NOT EXISTS users (
-               id          INT PRIMARY KEY,
-               name        VARCHAR(100) NOT NULL,
-               email       VARCHAR(100) NOT NULL,
-               created_at  TIMESTAMPTZ NOT NULL
-             );`,
+              id          INT PRIMARY KEY,
+              name        VARCHAR(100) NOT NULL,
+              email       VARCHAR(100) NOT NULL,
+              created_at  TIMESTAMPTZ NOT NULL
+            );`,
 		}),
 	}
 }
 
-// TestExampleTestSuite runs the test suite
-// go test ./examples/... -v                            # Direct connection mode
-// USE_TEST_CONTAINERS=true go test ./examples/... -v  # Container mode
+// TestExampleTestSuite runs the test suite with its own dedicated PostgreSQL container.
+// Run with: go test ./examples/... -v
 func TestExampleTestSuite(t *testing.T) {
 	suite.Run(t, NewExampleTestSuite())
 }
+
+// func (suite *ExampleTestSuite) Setup(suiteName, testName string) {
 
 func (suite *ExampleTestSuite) SetupTest() {
 	suite.WPgxTestSuite.SetupTest()
@@ -75,9 +75,10 @@ func (suite *ExampleTestSuite) TestInsertAndQuery() {
 // TestUsingContainerInfo demonstrates how to access connection information in tests
 func (suite *ExampleTestSuite) TestUsingContainerInfo() {
 	// In container mode, Config is automatically updated with container connection details
-	suite.T().Logf("PostgreSQL Host: %s", suite.Config.Host)
-	suite.T().Logf("PostgreSQL Port: %d", suite.Config.Port)
-	suite.T().Logf("Database Name: %s", suite.Config.DBName)
+	config := suite.GetConfig()
+	suite.T().Logf("PostgreSQL Host: %s", config.Host)
+	suite.T().Logf("PostgreSQL Port: %d", config.Port)
+	suite.T().Logf("Database Name: %s", config.DBName)
 
 	// Verify database connectivity
 	err := suite.Pool.Ping(context.Background())
