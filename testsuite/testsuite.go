@@ -103,6 +103,10 @@ func NewWPgxTestSuiteFromEnv(tables []string) *WPgxTestSuite {
 		defer os.Unsetenv(envKey)
 	}
 	config := wpgx.ConfigFromEnvPrefix(wpgx.DefaultEnvPrefix)
+	// Test environments typically don't have SSL enabled
+	if config.SSLMode == "" || config.SSLMode == "require" {
+		config.SSLMode = "disable"
+	}
 	return NewWPgxTestSuiteFromConfig(config, tables, useContainer)
 }
 
