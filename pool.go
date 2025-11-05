@@ -46,13 +46,24 @@ type pgxConfig struct {
 }
 
 func newRawPgxPool(ctx context.Context, config *pgxConfig) (*pgxpool.Pool, error) {
-	pgConfig, err := pgxpool.ParseConfig(fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=%s",
-		config.Username,
-		config.Password,
-		config.Host,
-		config.Port,
-		config.DBName,
-		config.SSLMode))
+	var connString string
+	if config.Password != "" {
+		connString = fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=%s",
+			config.Username,
+			config.Password,
+			config.Host,
+			config.Port,
+			config.DBName,
+			config.SSLMode)
+	} else {
+		connString = fmt.Sprintf("postgres://%s@%s:%d/%s?sslmode=%s",
+			config.Username,
+			config.Host,
+			config.Port,
+			config.DBName,
+			config.SSLMode)
+	}
+	pgConfig, err := pgxpool.ParseConfig(connString)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +72,9 @@ func newRawPgxPool(ctx context.Context, config *pgxConfig) (*pgxpool.Pool, error
 	pgConfig.MaxConnLifetime = config.MaxConnLifetime
 	pgConfig.MaxConnIdleTime = config.MaxConnIdleTime
 	if config.BeforeAcquire != nil {
-		pgConfig.BeforeAcquire = config.BeforeAcquire
+		pgConfig.PrepareConn = func(ctx context.Context, conn *pgx.Conn) (bool, error) {
+			return config.BeforeAcquire(ctx, conn), nil
+		}
 	}
 	// Use Exec mode for db behind proxy, see:
 	// https://github.com/jackc/pgx/blob/b197994b1f8e803940b05821957fea0ee5f82c04/doc.go#L189
